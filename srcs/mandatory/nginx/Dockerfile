@@ -6,14 +6,14 @@
 #    By: brattles <brattles@student.21-school.ru    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/16 22:57:49 by brattles          #+#    #+#              #
-#    Updated: 2021/07/03 20:35:21 by brattles         ###   ########.fr        #
+#    Updated: 2021/07/27 07:19:05 by brattles         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 FROM debian:buster
 
 RUN apt-get update && \
-	apt-get -y --no-install-suggests install nginx && \
+	apt-get -y install nginx && \
 	apt-get -y install openssl
 
 RUN mkdir -p /etc/nginx/ssl
@@ -21,7 +21,9 @@ RUN openssl req -x509 -nodes -newkey rsa:2048 -sha256 -out /etc/nginx/ssl/local.
 
 COPY default.conf /etc/nginx/conf.d/default.conf
 
+RUN mkdir -p /var/run/nginx/ && \
+	mkdir -p /var/www/wordpress
+
 EXPOSE 443
 
-RUN mkdir -p /var/run/nginx/
 CMD ["nginx", "-g", "daemon off;"]
