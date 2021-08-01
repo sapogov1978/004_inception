@@ -18,36 +18,24 @@
  * @package WordPress
  */
 
-
-//define( 'WP_CACHE', true);
-//Salt for the cache objects, site-url, replace dot and forward slash with dash
-//define( 'WP_CACHE_KEY_SALT','brattles.42.fr' );
-//IP or hostname of the target server. Either app/container name, i.e. redis1 or localhost
-//define( 'WP_REDIS_HOST', 'redis' );
-// Either the default 6379 when using appName as host or 30xxx port number found in app quick view
-//define( 'WP_REDIS_PORT', '6379' );
-//either not set as there is no password by default for Redis, or if you changed redis password, set it here
-
-
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define( 'DB_NAME', getenv('WORDPRESS_DB_NAME') );
+define('DB_NAME', 'WORDPRESS_DB_NAME');
 
 /** MySQL database username */
-define( 'DB_USER', getenv('WORDPRESS_DB_USER') );
+define('DB_USER', 'WORDPRESS_DB_USER');
 
 /** MySQL database password */
-define( 'DB_PASSWORD', getenv('WORDPRESS_DB_PASSWORD') );
+define('DB_PASSWORD', 'WORDPRESS_DB_PASSWORD');
 
 /** MySQL hostname */
-define( 'DB_HOST', getenv('WORDPRESS_DB_HOST') );
+define('DB_HOST', 'WORDPRESS_DB_HOST');
 
 /** Database Charset to use in creating database tables. */
-define( 'DB_CHARSET', 'utf8' );
+define('DB_CHARSET', 'utf8');
 
 /** The Database Collate type. Don't change this if in doubt. */
-define( 'DB_COLLATE', '' );
-define('FS_METHOD', 'direct');
+define('DB_COLLATE', '');
 
 /**#@+
  * Authentication Unique Keys and Salts.
@@ -90,18 +78,15 @@ $table_prefix = 'wp_';
  *
  * @link https://wordpress.org/support/article/debugging-in-wordpress/
  */
-
 define( 'WP_DEBUG', true );
+
 define( 'WP_DEBUG_LOG', true );
+
 define( 'WP_DEBUG_DISPLAY', false );
-
 /* That's all, stop editing! Happy publishing. */
-
-/** Absolute path to the WordPress directory. */
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/' );
+if (!defined('ABSPATH')){
+	define('ABSPATH',__DIR__ . '/');
 }
 
-/** Sets up WordPress vars and included files. */
 require_once ABSPATH . 'wp-settings.php';
 ?>
