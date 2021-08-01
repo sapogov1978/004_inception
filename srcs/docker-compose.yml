@@ -1,74 +1,80 @@
-version: '3.5'
+#------------------------------------------------------------------------------
+# COMPOSE BY BRATTLES
+#------------------------------------------------------------------------------
+version: "3.9"
+#------------------------------------------------------------------------------
 networks:
-  mandatory:
-    name: mandatory
+    mandatory:
+        name: mandatory
+#------------------------------------------------------------------------------
 volumes:
-  wpws:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/brattles/data/ws
-  wpdb:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/brattles/data/db
+    wpws:
+        name: wpws
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: /home/brattles/data/ws
+    wpdb:
+        name: wpdb
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: /home/brattles/data/db
+#------------------------------------------------------------------------------
 services:
-  db:
-    container_name: db
-    image: 'debian:buster'
-    restart: always
-    networks:
-      - mandatory
-    build:
-      context: ./mandatory/mariadb
-      dockerfile: Dockerfile
-    volumes:
-      - 'wpdb:/home/brattles/data/db'
-    ports:
-      - '3306:3306'
-    env_file: .env
-    environment:
-      - 'TZ=${TZ}'
-      - 'MYSQL_ALLOW_EMPTY_PASSWORD={MYSQL_ALLOW_EMPTY_PASSWORD}'
-      - 'MYSQL_DATABASE=${MYSQL_DATABASE}'
-      - 'MYSQL_USER=${MYSQL_USER}'
-      - 'MYSQL_PASSWORD=${MYSQL_PASSWORD}'
-      - 'MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}'
-  nginx:
-    container_name: nginx
-    image: 'debian:buster'
-    restart: always
-    networks:
-      - mandatory
-    depends_on:
-      - wordpress
-    build:
-      context: ./mandatory/nginx
-      dockerfile: Dockerfile
-    ports:
-      - '443:443'
-  wordpress:
-    container_name: wordpress
-    image: 'debian:buster'
-    restart: always
-    networks:
-      - mandatory
-    depends_on:
-      - db
-    build:
-      context: ./mandatory/wordpress
-      dockerfile: Dockerfile
-    volumes:
-      - 'wpws:/var/www/wordpress'
-    ports:
-      - '9000:9000'
-    env_file: .env
-    environment:
-      - 'WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}'
-      - 'WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}'
-      - 'WORDPRESS_DB_TABLE_PREFIX=${WORDPRESS_DB_TABLE_PREFIX}'
-      - 'WORDPRESS_DB_USER=${WORDPRESS_DB_USER}'
-      - 'WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}'
+#------------------------------------------------------------------------------
+# MANDATORY PART
+#------------------------------------------------------------------------------
+    mysql:
+        container_name: "mysql"
+        image: "mysql"
+        restart: "always"
+        networks:
+            - mandatory
+        build:
+            context: ./mandatory/mariadb
+            args:
+                - MYSQL_DATABASE=${MYSQL_DATABASE}
+                - MYSQL_USER=${MYSQL_USER}
+                - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+                - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        volumes:
+            - wpdb:/var/lib/mysql
+        env_file: .env
+#------------------------------------------------------------------------------
+    nginx:
+        container_name: "nginx"
+        image: "nginx"
+        restart: "always"
+        networks:
+            - mandatory
+        depends_on:
+            - wordpress
+        build:
+            context: ./mandatory/nginx
+        ports:
+            - "443:443"
+        volumes:
+            - wpws:/var/www/wordpress
+        env_file: .env
+#------------------------------------------------------------------------------
+    wordpress:
+        container_name: "wordpress"
+        image: "wordpress"
+        restart: "always"
+        networks:
+            - mandatory
+        depends_on:
+            - mysql
+        build:
+            context: ./mandatory/wordpress
+            args:
+                - MYSQL_DATABASE=${MYSQL_DATABASE}
+                - MYSQL_USER=${MYSQL_USER}
+                - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+                - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
+        volumes:
+            - wpws:/var/www/wordpress
+        env_file: .env
